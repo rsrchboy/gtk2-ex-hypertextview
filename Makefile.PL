@@ -4,11 +4,11 @@ sub extra_tests { warn 'You need Module::Install::ExtraTests installed' }
 
 use inc::Module::Install;
 
-my $main_module = '';
+my $main_module = 'lib/Gtk2/Ex/HyperTextView.pm';
 
 githubmeta;
 
-name     '';
+name     'Gtk2-Ex-HyperTextView';
 all_from $main_module;
 author   q{Chris Weyl <cweyl@alumni.drew.edu>};
 license  'lgpl';
@@ -17,10 +17,19 @@ readme_from $main_module;
 readme_markdown_from $main_module;
 
 requires 'namespace::autoclean' => '0.09';
-requires 'Moose' => '0.94';
+#requires 'Moose' => '0.94';
+
+requires 'Glib::Object::Subclass';
+requires 'Gtk2';
+requires 'Gtk2::Gdk::Keysyms';
+requires 'Gtk2::Pango';
+requires 'File::Spec';
+requires 'File::BaseDir';
+requires 'File::MimeInfo::Magic';
+requires 'File::MimeInfo::Applications';
 
 test_requires 'Test::More';
-test_requires 'Test::Moose';
+#test_requires 'Test::Moose';
 test_requires 'Test::UseAllModules';
 
 author_requires 'File::Find::Rule';
