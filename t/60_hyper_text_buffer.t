@@ -1,7 +1,9 @@
 use Test::More tests => 2;
-require 't/env.pm';
+#require 't/env.pm';
 
 use strict;
+
+use Gtk2 -init;
 use Gtk2::Ex::HyperTextBuffer;
 
 my $buffer = Gtk2::Ex::HyperTextBuffer->new();

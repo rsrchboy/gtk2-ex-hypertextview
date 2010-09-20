@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 use strict;
-use Test::UseAllModules;
+use Test::UseAllModules under => 'lib';
 
 BEGIN { all_uses_ok(); }
 
