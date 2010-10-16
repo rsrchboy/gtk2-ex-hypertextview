@@ -1,8 +1,11 @@
 package Gtk2::Ex::HyperTextBuffer;
 
-our $VERSION = '0.28';
+our $VERSION = '0.50_01';
 
 use strict;
+
+use Carp 'croak';
+
 use Gtk2;
 use Gtk2::Pango;    # pango constants
 use File::Spec;     # for locating images
@@ -11,7 +14,7 @@ use Glib::Object::Subclass
 
     # new signals
     edit_mode_changed => {},
-    };
+};
 
 =head1 NAME
 
@@ -1053,6 +1056,87 @@ sub _parse_link {    # FIXME copy-pasted from Zim/Formats/Wiki.pm
         $l =~ s/^(mailto:)?/mailto:/;
     }
     return [ 'link', { to => $l }, length($text) ? $text : $l ];
+}
+
+=item C<apply_format(FORMAT, BOOLEAN)>
+
+Applies the property FORMAT to any selected text
+or toggles the edit mode.
+
+BOOLEAN is used to force format (TRUE) or un-format (FALSE). If BOOLEAN is
+undefined the function acts as a toggle.
+
+=cut
+
+# FIXME this is still pretty ugly; almost a raw copy from Zim/GUI/PageView.pm
+
+sub apply_bold { shift->apply_format('bold', @_) }
+
+sub apply_format {
+    my ($self, $tag, $bool) = @_;
+    croak "Can't call apply_format() without a tag" unless length $tag;
+    my $buffer = $self; #->{buffer};
+    my $has_tag = $tag eq 'normal' ? 1 : 0;
+
+    # Check selections
+    my $_tag = $buffer->get_tag_table->lookup($tag);
+    my $_Verbatim;
+    my $select;
+
+    my ($start, $end) = $buffer->get_selection_bounds;
+
+    CHECK_TAG:
+    if ($end and $start != $end) {
+        $select = 'normal';
+        $has_tag ||= $start->has_tag($_tag);
+    }
+    else {
+        $has_tag ||= grep {$_ eq $_tag} $buffer->get_edit_mode_tags;
+    }
+
+    if (!$has_tag and $tag eq 'verbatim' and ! $_Verbatim) { # ugly exception
+        $_Verbatim = $buffer->get_tag_table->lookup('Verbatim');
+        $_tag = $_Verbatim;
+        goto CHECK_TAG;
+    }
+
+    if (!$has_tag and !$select and $self->{app}{settings}{use_autoselect}) {
+        ($start, $end) = $buffer->auto_selection($tag);
+        $select = 'auto' if defined $start;
+    }
+
+    return 0 if defined $bool and $bool == $has_tag;
+        # do nothing if state is same
+
+    if ($select) { # there is a selection
+        if ($tag eq 'verbatim' and !$has_tag) {
+            $_Verbatim ||= $buffer->get_tag_table->lookup('Verbatim');
+            $tag = 'Verbatim'
+                if $start->get_line != $end->get_line
+                or $start->starts_line && $end->ends_line
+                or $start->has_tag($_Verbatim)
+                or $end->has_tag($_Verbatim)  ;
+        }
+
+        $buffer->remove_all_tags($start, $end);
+        $buffer->apply_tag_by_name($tag, $start, $end)
+            unless $has_tag or $tag eq 'normal';
+        $buffer->set_modified(1);
+
+        if ($tag =~ /^head/ and !$has_tag) { # give headers their own line
+            $end = $end->ends_line ? undef : $end->get_offset ;
+            $buffer->insert($start, "\n") unless $start->starts_line;
+            $buffer->insert($buffer->get_iter_at_offset($end+1), "\n")
+                unless ! defined $end;
+        }
+
+        if ($select eq 'auto') { # unselect
+            ($start, $end) = $buffer->get_selection_bounds;
+            $buffer->select_range($end, $end) if $end;
+        }
+    }
+
+    $buffer->set_edit_mode_tags($has_tag ? () : ($tag));
 }
 
 1;
