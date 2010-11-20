@@ -27,6 +27,7 @@ requires 'File::Spec';
 requires 'File::BaseDir';
 requires 'File::MimeInfo::Magic';
 requires 'File::MimeInfo::Applications';
+requires 'Try::Tiny';
 
 test_requires 'Test::More';
 #test_requires 'Test::Moose';

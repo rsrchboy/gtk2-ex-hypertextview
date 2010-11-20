@@ -3,8 +3,13 @@ package Gtk2::Ex::HyperTextBuffer;
 our $VERSION = '0.50_01';
 
 use strict;
+use namespace::autoclean;
+
+#use Smart::Comments '###';
 
 use Carp 'croak';
+use Params::Validate ':all';
+use Try::Tiny;
 
 use Gtk2;
 use Gtk2::Pango;    # pango constants
@@ -292,53 +297,69 @@ sub _insert_blocks {
 =item C<insert_image_from_file(%PARAM)>
 
 Insert an image in the buffer at the cursor. The params should at least contain
-'file' and optionally 'src', 'width' and 'height'.
+'file' or 'icon' and optionally 'src', 'width' and 'height'.
 
 The 'file' param is used as source for the image. If both 'width' and 'height'
 are set the image is resized to these dimensions. If one of both is zero or
 undefined the image is scaled with fixed ratio. All other params are attached
 to the image as data field.
 
+'icon' causes us to try to look up and insert the specified stock icon.
+
 Use C<insert_blocks()> if you want this action to be un-doable.
 
 =cut
 
 sub insert_image_from_file {
-    my ($self, %param) = @_;
-    die "BUG: image without 'file' attribute"
-        unless length $param{file}
-            or length $param{icon};
+    #my ($self, %param) = @_;
+    my $self = shift @_;
 
-    my $pixbuf = undef;
+    my %param = validate_with(
+        params => [ @_ ],
+        spec => {
+            file => { optional => 1, type => SCALAR },
+            icon => { optional => 1, type => SCALAR },
+
+            src    => { optional => 1, type => SCALAR },
+            width  => { optional => 1, type => SCALAR, default => -1 },
+            height => { optional => 1, type => SCALAR, default => -1 },
+        },
+        allow_extra => 1, # sigh
+    );
+
+    croak "Either file or icon attribute must be passed"
+        unless $param{file} || $param{icon};
+    croak "File and icon are mutually exclusive"
+        if $param{file} && $param{icon};
+
+    ### %param
+
+    my $pixbuf;
+
     if ($param{file}) {
         my ($w, $h) = @param{ 'width', 'height' };
-        eval {
+        try {
             $pixbuf
                 = ($w || $h)
-                ? Gtk2::Gdk::Pixbuf->new_from_file_at_size($param{file},
-                $w || -1, $h || -1)
-                : Gtk2::Gdk::Pixbuf->new_from_file($param{file});
+                ? Gtk2::Gdk::Pixbuf->new_from_file_at_size($param{file}, $w, $h)
+                : Gtk2::Gdk::Pixbuf->new_from_file($param{file})
+                ;
         } if -f $param{file} and -r _ ;
-        $pixbuf
-            ||= Gtk2::Image->new->render_icon('gtk-missing-image', 'dialog')
-            ->copy;
+
+        $pixbuf ||= Gtk2::Image->new->render_icon('gtk-missing-image', 'dialog') ->copy;
         die "Could not insert image: $param{file}\n" unless $pixbuf;
     }
     elsif ($param{icon}) {
-        $pixbuf ||= Gtk2::Image->new->render_icon($param{icon}, 'menu')->copy;
-        die "Could not insert icon: $param{icon}\n" unless $pixbuf;
+        $pixbuf = Gtk2::Image->new->render_icon($param{icon}, 'menu')->copy;
     }
-    else { die 'BUG' }
+
+    croak 'Could not create pixbuf' unless $pixbuf;
 
     $pixbuf->{image_data} = \%param;
-    my $iter ||= $self->get_iter_at_mark($self->get_insert);
-
-    #my $mark = $self->create_mark(undef, $iter, 0);
-    #$mark->set_visible(1);
-
+    my $iter = $self->get_iter_at_mark($self->get_insert);
     $self->insert_pixbuf($iter, $pixbuf);
 
-    return $pixbuf;
+    return $pixbuf; # really?
 }
 
 =item C<get_parse_tree()>
