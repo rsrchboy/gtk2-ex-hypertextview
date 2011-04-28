@@ -1,6 +1,6 @@
 package Gtk2::Ex::HyperTextView;
 
-our $VERSION = '0.28';
+# ABSTRACT: A TextView widget with hyper links
 
 use strict;
 use vars '%TAGS';
@@ -19,13 +19,9 @@ use Glib::Object::Subclass
 		paste_clipboard => \&on_paste_clipboard,
 	 };
 
-=head1 NAME
-
-Gtk2::Ex::HyperTextView - A TextView widget with hyper links
-
 =head1 DESCRIPTION
 
-This module derives from Gtk2::TextView but adds code to have
+This module derives from L<Gtk2::TextView> but adds code to have
 hyperlinks in your text. It adds 3 signals to make it easier to
 work with links.
 
@@ -697,11 +693,15 @@ Emitted when the mouse cursor leaves the region of a link.
 
 =head1 AUTHOR
 
-Jaap Karssenberg || Pardus [Larus] <pardus@cpan.org>
+This code is currently maintained by Chris Weyl <cweyl@alumni.drew.edu>.
 
-Copyright (c) 2005 Jaap G Karssenberg. All rights reserved.  This program
-is free software; you can redistribute it and/or modify it under the same
-terms as Perl itself.
+The original code was written (and copyright by):
+
+    Jaap Karssenberg || Pardus [Larus] <pardus@cpan.org>
+
+    Copyright (c) 2005 Jaap G Karssenberg. All rights reserved.  This program
+    is free software; you can redistribute it and/or modify it under the same
+    terms as Perl itself.
 
 =cut
 

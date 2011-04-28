@@ -1,6 +1,6 @@
 package Gtk2::Ex::HyperTextBuffer;
 
-our $VERSION = '0.50_01';
+# ABSRACT: A TextBuffer for the HyperTextView widget
 
 use strict;
 use namespace::autoclean;
@@ -20,10 +20,6 @@ use Glib::Object::Subclass
     # new signals
     edit_mode_changed => {},
 };
-
-=head1 NAME
-
-HyperTextBuffer - A TextBuffer for the HyperTextView widget
 
 =head1 DESCRIPTION
 
@@ -1205,15 +1201,18 @@ same way as for other tags.
 
 =back
 
-=head1 AUTHOR
-
-Jaap Karssenberg (Pardus) E<lt>pardus@cpan.orgE<gt>
-
-Copyright (c) 2005 Jaap G Karssenberg. All rights reserved.
-This program is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself.
-
 =head1 SEE ALSO
 
-=cut
+=head1 AUTHOR
 
+This code is currently maintained by Chris Weyl <cweyl@alumni.drew.edu>.
+
+The original code was written (and copyright by):
+
+    Jaap Karssenberg || Pardus [Larus] <pardus@cpan.org>
+
+    Copyright (c) 2005 Jaap G Karssenberg. All rights reserved.  This program
+    is free software; you can redistribute it and/or modify it under the same
+    terms as Perl itself.
+
+=cut

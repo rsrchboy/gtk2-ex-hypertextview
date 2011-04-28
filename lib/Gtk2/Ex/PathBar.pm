@@ -1,6 +1,6 @@
 package Gtk2::Ex::PathBar;
 
-our $VERSION = '0.14';
+# ABSTRACT: A button path bar widget
 
 use strict;
 use Gtk2;
@@ -17,10 +17,6 @@ use Glib::Object::Subclass
 
 our $scroll_timeout = 150;
 our $initial_scroll_timeout = 300;
-
-=head1 NAME
-
-Gtk2::Ex::PathBar - A button path bar widget
 
 =head1 SYNOPSIS
 
@@ -546,11 +542,15 @@ button clicked. INDEX is the list index of the button in the path.
 
 =head1 AUTHOR
 
-Jaap Karssenberg || Pardus [Larus] <pardus@cpan.org>
+This code is currently maintained by Chris Weyl <cweyl@alumni.drew.edu>.
 
-Copyright (c) 2005 Jaap G Karssenberg. All rights reserved.  This program
-is free software; you can redistribute it and/or modify it under the same
-terms as Perl itself.
+The original code was written (and copyright by):
+
+    Jaap Karssenberg || Pardus [Larus] <pardus@cpan.org>
+
+    Copyright (c) 2005 Jaap G Karssenberg. All rights reserved.  This program
+    is free software; you can redistribute it and/or modify it under the same
+    terms as Perl itself.
 
 =cut
 
