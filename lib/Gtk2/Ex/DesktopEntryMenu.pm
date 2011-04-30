@@ -12,132 +12,132 @@ use File::MimeInfo::Applications;
 our $STYLE = 'auto'; # either "auto" "menu" or "plain"
 
 sub import {
-	my ($class, %opts) = @_;
-	die "Unkonw style: $opts{style}"
-		if  defined  $opts{style}
-		and ! grep { $opts{style} eq $_ } qw/auto plain menu/;
-	$STYLE = $opts{style} if defined $opts{style};
+    my ($class, %opts) = @_;
+    die "Unkonw style: $opts{style}"
+        if  defined  $opts{style}
+        and ! grep { $opts{style} eq $_ } qw/auto plain menu/;
+    $STYLE = $opts{style} if defined $opts{style};
 }
 
 sub populate_menu {
-	my ($class, $menu, $file, $mimetype, $style) = @_;
-	$style ||= $STYLE;
-	
-	my @items = $class->menuitems($file, $mimetype);
+    my ($class, $menu, $file, $mimetype, $style) = @_;
+    $style ||= $STYLE;
 
-	# if no items add insensitive item
-	unless (@items) {
-		my $item = Gtk2::MenuItem->new('_Open');
-		$item->set_sensitive(0);
-		push @items, $item;
-	}
+    my @items = $class->menuitems($file, $mimetype);
 
-	if (
-		($style eq 'menu' and @items > 1) or
-		($style eq 'auto' and @items > 4)
-	) { # use a submenu
-		my $item = Gtk2::MenuItem->new('Open _With ...');
-		$menu->prepend($item);
-		$item->show;
+    # if no items add insensitive item
+    unless (@items) {
+        my $item = Gtk2::MenuItem->new('_Open');
+        $item->set_sensitive(0);
+        push @items, $item;
+    }
 
-		my $submenu = Gtk2::Menu->new;
-		$item->set_submenu($submenu);
-		$submenu->show;
+    if (
+        ($style eq 'menu' and @items > 1) or
+        ($style eq 'auto' and @items > 4)
+    ) { # use a submenu
+        my $item = Gtk2::MenuItem->new('Open _With ...');
+        $menu->prepend($item);
+        $item->show;
 
-		my $first = shift @items;
-		$menu->prepend($first);
-		$first->show;
+        my $submenu = Gtk2::Menu->new;
+        $item->set_submenu($submenu);
+        $submenu->show;
 
-		$menu = $submenu;
-	}
+        my $first = shift @items;
+        $menu->prepend($first);
+        $first->show;
 
-	for (reverse @items) {
-		$menu->prepend($_);
-		$_->show;
-	}
+        $menu = $submenu;
+    }
+
+    for (reverse @items) {
+        $menu->prepend($_);
+        $_->show;
+    }
 }
 
 sub menuitems {
-	my ($class, $file, $mimetype) = @_;
-	
-	$mimetype ||= _mimetype($file);
-	return unless $mimetype;
-	
-	my @entries = mime_applications($mimetype);
-	return unless @entries;
-	#warn join "\n", map {$_ ? $_->{file} : $_} @entries, '';
+    my ($class, $file, $mimetype) = @_;
 
-	my @names;
-	for my $entry (grep defined($_), @entries) {
-		$entry->{file} =~ /([\w\-\.]+)$/;
-		my $name = $1;
-		$entry = undef if grep {$_ eq $name} @names;
-		push @names, $name;
-	}
-	
-	my $default = shift @entries;
-	@entries = grep defined($_), @entries;
-	my @items = $default ? ($class->menuitem($default, $file, 1)) : () ;
-	while (@entries) {
-		push @items, $class->menuitem(shift(@entries), $file);
-	}
+    $mimetype ||= _mimetype($file);
+    return unless $mimetype;
 
-	return @items;
+    my @entries = mime_applications($mimetype);
+    return unless @entries;
+    #warn join "\n", map {$_ ? $_->{file} : $_} @entries, '';
+
+    my @names;
+    for my $entry (grep defined($_), @entries) {
+        $entry->{file} =~ /([\w\-\.]+)$/;
+        my $name = $1;
+        $entry = undef if grep {$_ eq $name} @names;
+        push @names, $name;
+    }
+
+    my $default = shift @entries;
+    @entries = grep defined($_), @entries;
+    my @items = $default ? ($class->menuitem($default, $file, 1)) : () ;
+    while (@entries) {
+        push @items, $class->menuitem(shift(@entries), $file);
+    }
+
+    return @items;
 }
 
 sub _mimetype {
-	my $file = shift;
-	$file = $$file[0] if ref $file;
-	$file =~ s#^file://##;
-	my $mt = mimetype($file);
-	#warn "Found mimetype $mt for $file\n";
-	return $mt;
+    my $file = shift;
+    $file = $$file[0] if ref $file;
+    $file =~ s#^file://##;
+    my $mt = mimetype($file);
+    #warn "Found mimetype $mt for $file\n";
+    return $mt;
 }
 
 sub menuitem {
-	my ($class, $entry, $file, $default) = @_;
-	
-	my $label = ($default ? '_Open With ' : 'Open With ')
-	            . '"' . $entry->get_value('Name') . '"' ;
-	my $icon = $entry->get_value('Icon');
-	
-	my $pixbuf = length($icon) ? $class->icon_pixbuf($icon, 'menu') : undef ;
-	my $image = $pixbuf  ? Gtk2::Image->new_from_pixbuf($pixbuf)
-	          : $default ? Gtk2::Image->new_from_stock('gtk-open', 'menu')
-		  : undef ;
-	
-	my $item = Gtk2::ImageMenuItem->new($label);
-	$item->set_image($image) if $image;
-	$item->{file} = $file;
-	$item->{entry} = $entry;
-	$item->signal_connect(activate => \&on_item_activated);
-	return $item;
+    my ($class, $entry, $file, $default) = @_;
+
+    my $label = ($default ? '_Open With ' : 'Open With ')
+                . '"' . $entry->get_value('Name') . '"' ;
+    my $icon = $entry->get_value('Icon');
+
+    my $pixbuf = length($icon) ? $class->icon_pixbuf($icon, 'menu') : undef ;
+    my $image = $pixbuf  ? Gtk2::Image->new_from_pixbuf($pixbuf)
+              : $default ? Gtk2::Image->new_from_stock('gtk-open', 'menu')
+          : undef ;
+
+    my $item = Gtk2::ImageMenuItem->new($label);
+    $item->set_image($image) if $image;
+    $item->{file} = $file;
+    $item->{entry} = $entry;
+    $item->signal_connect(activate => \&on_item_activated);
+    return $item;
 }
 
 sub on_item_activated {
-	my $item = shift;
-	my ($entry, $file) = @$item{'entry', 'file'};
-	unless (fork) { # child process
-		eval { $entry->exec(ref($file) ? @$file : $file) };
-		warn $@ if $@;
-		exit 1;
-	}
+    my $item = shift;
+    my ($entry, $file) = @$item{'entry', 'file'};
+    unless (fork) { # child process
+        eval { $entry->exec(ref($file) ? @$file : $file) };
+        warn $@ if $@;
+        exit 1;
+    }
 }
 
 sub icon_pixbuf {
-	my (undef, $name, $size) = @_;
+    my (undef, $name, $size) = @_;
 
-	my @size = Gtk2::IconSize->lookup($size);
-	if (File::Spec->file_name_is_absolute($name)) {
-		return undef unless -f $name and -r _;
-		return Gtk2::Gdk::Pixbuf->new_from_file_at_size($name, @size);
-	}
-	else {
-		$name =~ s/\..*$//; # remove extension
-		my $icontheme = Gtk2::IconTheme->get_default;
-		my $pixbuf = eval { $icontheme->load_icon($name, $size[0], []) };
-		return $@ ? undef : $pixbuf;
-	}
+    my @size = Gtk2::IconSize->lookup($size);
+    if (File::Spec->file_name_is_absolute($name)) {
+        return undef unless -f $name and -r _;
+        return Gtk2::Gdk::Pixbuf->new_from_file_at_size($name, @size);
+    }
+    else {
+        $name =~ s/\..*$//; # remove extension
+        my $icontheme = Gtk2::IconTheme->get_default;
+        my $pixbuf = eval { $icontheme->load_icon($name, $size[0], []) };
+        return $@ ? undef : $pixbuf;
+    }
 }
 
 1;
@@ -146,14 +146,14 @@ __END__
 
 =head1 SYNOPSIS
 
-	use Gtk2::Ex::DesktopEntryMenu style => 'auto';
+    use Gtk2::Ex::DesktopEntryMenu style => 'auto';
 
-	sub on_populate_popup {
-		# ...
-		Gtk2::Ex::DesktopEntryMenu->populate_menu($menu, $hyperlink)
-			if $hyperlink =~ m#^file://# ;
-		# ..
-	}
+    sub on_populate_popup {
+        # ...
+        Gtk2::Ex::DesktopEntryMenu->populate_menu($menu, $hyperlink)
+            if $hyperlink =~ m#^file://# ;
+        # ..
+    }
 
 =head1 DESCRIPTION
 
