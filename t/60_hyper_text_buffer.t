@@ -18,11 +18,15 @@ is_deeply(
 #warn "<"x40, "\n", Dumper &tree1;
 #warn ">"x40, "\n", Dumper $buffer->get_parse_tree;
 
-$buffer->set_parse_tree(&tree2);
-is_deeply(
-	$buffer->get_parse_tree(),
-	&tree2,
-	'parse tree with image' ); # 2
+TODO: {
+    local $TODO = q{need images from Zim pulled over};
+
+    $buffer->set_parse_tree(tree2());
+    is_deeply(
+        $buffer->get_parse_tree(),
+        tree2(),
+        'parse tree with image' ); # 2
+}
 
 sub tree1 {
 	['Page', {},
