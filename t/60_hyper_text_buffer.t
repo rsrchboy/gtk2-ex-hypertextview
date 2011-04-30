@@ -1,5 +1,4 @@
 use Test::More tests => 2;
-#require 't/env.pm';
 
 use strict;
 
@@ -12,11 +11,9 @@ $buffer->create_default_tags;
 $buffer->set_parse_tree(&tree1);
 is_deeply(
 	$buffer->get_parse_tree(),
-	&tree1,
-	'parse tree round trip' ); # 1
-#use Data::Dumper;
-#warn "<"x40, "\n", Dumper &tree1;
-#warn ">"x40, "\n", Dumper $buffer->get_parse_tree;
+	tree1(),
+	'parse tree round trip',
+); # 1
 
 TODO: {
     local $TODO = q{need images from Zim pulled over};
@@ -25,7 +22,8 @@ TODO: {
     is_deeply(
         $buffer->get_parse_tree(),
         tree2(),
-        'parse tree with image' ); # 2
+        'parse tree with image',
+    ); # 2
 }
 
 sub tree1 {
