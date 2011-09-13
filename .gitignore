@@ -15,3 +15,5 @@ inc
 META.yml
 *.bak
 MYMETA.*
+Gtk2-Ex-HyperTextView-*
+releases/
