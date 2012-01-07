@@ -8,36 +8,18 @@ use strict;
 use Gtk2;
 use Gtk2::Pango;
 
-#use Class::Accessor 'antlers';
+# debugging...
 use Smart::Comments '###';
 
-#
-# we want to create a new signal for this object, which means we need to
-# create a new GType.  however, using Glib::Object::Subclass (as of Glib
-# 1.031 and all previous) makes it impossible for us to be require'd,
-# thanks to the CHECK block madness.  so, we use Glib::Type::register
-# directly.
-#
-
-# inherit new from Glib::Object.
-*new = \&Glib::Object::new;
-
-Glib::Type->register(
+use Glib::Object::Subclass
 	Gtk2::TextView::,
-	__PACKAGE__,
 	signals => {
-		link_clicked => {
-			param_types => [qw/Glib::String/],
-		},
-		'link_enter' => {
-			param_types => [qw/Glib::String/],
-		},
-		'link_leave' => {
-		},
+		link_clicked => { param_types => [qw/Glib::String/] },
+		'link_enter' => { param_types => [qw/Glib::String/] },
+		'link_leave' => {                                   },
 	},
-	properties => [
-	],
-);
+	properties => [ ],
+;
 
 sub _parser { 'Gtk2::Ex::PodViewer::Parser' }
 
@@ -47,7 +29,6 @@ sub INIT_INSTANCE {
 	$self->set_editable(0);
 	$self->set_wrap_mode('word');
 	$self->{parser} = $self->_parser->new(buffer => $self->get_buffer);
-
 
 	$self->get_buffer->create_tag(
 		'bold',
@@ -67,6 +48,7 @@ sub INIT_INSTANCE {
 		size		=> 15 * PANGO_SCALE,
 		wrap_mode	=> 'word',
 		foreground	=> '#404080',
+        'pixels-above-lines' => 10,
 	);
 	$self->get_buffer->create_tag(
 		'head2',
@@ -376,9 +358,15 @@ sub load_file {
 
 sub load_string {
 	my ($self, $string) = @_;
+
+    ### in load_string(): ref $self->parser
+
 	$self->clear;
+    ### one...
 	$self->parser->clear_marks;
+    ### two...
 	$self->parser->parse_from_string($string);
+    ### three...
 	return 1;
 }
 
