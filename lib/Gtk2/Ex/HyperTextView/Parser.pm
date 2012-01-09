@@ -10,13 +10,11 @@ use namespace::autoclean;
 use MooseX::AttributeShortcuts 0.006;
 use MooseX::Types::Path::Class ':all';
 
+use Gtk2;
 use Path::Class;
 
 # debugging...
 use Smart::Comments;
-
-#has iter => (is => 'rwp', ...);
-#has links => (is => 'rwp', ...);
 
 has current_file => (
     is        => 'rwp',
@@ -36,8 +34,6 @@ has current_source => (
 # XXX
 has buffer => (is => 'ro', isa => 'Object', required => 1);
 
-sub _build_iter { shift->buffer->get_iter_at_offset(0) }
-
 # XXX
 has marks => (
     traits => ['Array'],
@@ -55,11 +51,6 @@ has marks => (
 sub parse_from_file {
     my ($self, $fn) = @_;
 
-    #my $file = file $fn;
-    #my $contents = $file->slurp;
-    #my $contents = $file->slurp;
-    #$self->parse_from_string($contents);
-
     $self->parse_from_string(file($fn)->slurp);
     $self->_set_current_file($fn);
     return 1;
@@ -75,9 +66,6 @@ sub parse_from_string {
 
 __END__
 
--- att
-
-iter
 links
 
 -- method

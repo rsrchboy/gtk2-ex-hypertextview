@@ -12,160 +12,161 @@ use Gtk2::Pango;
 use Smart::Comments '###';
 
 use Glib::Object::Subclass
-	Gtk2::TextView::,
-	signals => {
-		link_clicked => { param_types => [qw/Glib::String/] },
-		'link_enter' => { param_types => [qw/Glib::String/] },
-		'link_leave' => {                                   },
-	},
-	properties => [ ],
+    Gtk2::TextView::,
+    signals => {
+
+        link_clicked => { param_types => [ qw/Glib::String/ ] },
+        link_enter   => { param_types => [ qw/Glib::String/ ] },
+        link_leave   => {                                     },
+    },
+    properties => [ ],
 ;
 
 sub _parser { 'Gtk2::Ex::HyperTextView::Parser' }
 
 sub INIT_INSTANCE {
-	my $self = shift;
+    my $self = shift;
 
-	$self->set_editable(0);
-	$self->set_wrap_mode('word');
-	$self->{parser} = $self->_parser->new(buffer => $self->get_buffer);
+    $self->set_editable(0);
+    $self->set_wrap_mode('word');
+    $self->{parser} = $self->_parser->new(buffer => $self->get_buffer);
 
-	$self->get_buffer->create_tag(
-		'bold',
-		weight		=> PANGO_WEIGHT_BOLD
-	);
-	$self->get_buffer->create_tag(
-		'italic',
-		style		=> 'italic',
-	);
-	$self->get_buffer->create_tag(
-		'word_wrap',
-		wrap_mode	=> 'word',
-	);
-	$self->get_buffer->create_tag(
-		'head1',
-		weight		=> PANGO_WEIGHT_BOLD,
-		size		=> 15 * PANGO_SCALE,
-		wrap_mode	=> 'word',
-		foreground	=> '#404080',
-        'pixels-above-lines' => 10,
-	);
-	$self->get_buffer->create_tag(
-		'head2',
-		weight		=> PANGO_WEIGHT_BOLD,
-		size		=> 12 * PANGO_SCALE,
-		wrap_mode	=> 'word',
-		foreground	=> '#404080',
-	);
-	$self->get_buffer->create_tag(
-		'head3',
-		weight		=> PANGO_WEIGHT_BOLD,
-		size		=> 9 * PANGO_SCALE,
-		wrap_mode	=> 'word',
-		foreground	=> '#404080',
-	);
-	$self->get_buffer->create_tag(
-		'head4',
-		weight		=> PANGO_WEIGHT_BOLD,
-		size		=> 6 * PANGO_SCALE,
-		wrap_mode	=> 'word',
-		foreground	=> '#404080',
-	);
-	$self->get_buffer->create_tag(
-		'monospace',
-		family		=> 'monospace',
-		wrap_mode	=> 'none',
-		foreground	=> '#606060',
-	);
-	$self->get_buffer->create_tag(
-		'typewriter',
-		family		=> 'monospace',
-		wrap_mode	=> 'word',
-	);
-	$self->get_buffer->create_tag(
-		'link',
-		foreground	=> 'blue',
-		underline	=> 'single',
-		wrap_mode	=> 'word',
-	);
-	$self->get_buffer->create_tag(
-		'indented',
-		left_margin	=> 40,
-	);
-	$self->get_buffer->create_tag(
-		'normal',
-		wrap_mode	=> 'word',
-	);
+    $self->get_buffer->create_tag(
+        'bold',
+        weight                     => PANGO_WEIGHT_BOLD
+    );
+    $self->get_buffer->create_tag(
+        'italic',
+        style                      => 'italic',
+    );
+    $self->get_buffer->create_tag(
+        'word_wrap',
+        wrap_mode                  => 'word',
+    );
+    $self->get_buffer->create_tag(
+        'head1',
+        weight                     => PANGO_WEIGHT_BOLD,
+        size                       => 15 * PANGO_SCALE,
+        wrap_mode                  => 'word',
+        foreground                 => '#404080',
+        'pixels-above-lines'       => 10,
+    );
+    $self->get_buffer->create_tag(
+        'head2',
+        weight                     => PANGO_WEIGHT_BOLD,
+        size                       => 12 * PANGO_SCALE,
+        wrap_mode                  => 'word',
+        foreground                 => '#404080',
+    );
+    $self->get_buffer->create_tag(
+        'head3',
+        weight                     => PANGO_WEIGHT_BOLD,
+        size                       => 9 * PANGO_SCALE,
+        wrap_mode                  => 'word',
+        foreground                 => '#404080',
+    );
+    $self->get_buffer->create_tag(
+        'head4',
+        weight                     => PANGO_WEIGHT_BOLD,
+        size                       => 6 * PANGO_SCALE,
+        wrap_mode                  => 'word',
+        foreground                 => '#404080',
+    );
+    $self->get_buffer->create_tag(
+        'monospace',
+        family                     => 'monospace',
+        wrap_mode                  => 'none',
+        foreground                 => '#606060',
+    );
+    $self->get_buffer->create_tag(
+        'typewriter',
+        family                     => 'monospace',
+        wrap_mode                  => 'word',
+    );
+    $self->get_buffer->create_tag(
+        'link',
+        foreground                 => 'blue',
+        underline                  => 'single',
+        wrap_mode                  => 'word',
+    );
+    $self->get_buffer->create_tag(
+        'indented',
+        left_margin                => 40,
+    );
+    $self->get_buffer->create_tag(
+        'normal',
+        wrap_mode                  => 'word',
+    );
 
-	# put a 6pixel white border around the text:
-	$self->set_border_window_size('left', 6);
-	$self->set_border_window_size('top', 6);
-	$self->set_border_window_size('right', 6);
-	$self->set_border_window_size('bottom', 6);
-	$self->modify_bg('normal', Gtk2::Gdk::Color->new(65535, 65535, 65535));
+    # put a 6pixel white border around the text:
+    $self->set_border_window_size('left', 6);
+    $self->set_border_window_size('top', 6);
+    $self->set_border_window_size('right', 6);
+    $self->set_border_window_size('bottom', 6);
+    $self->modify_bg('normal', Gtk2::Gdk::Color->new(65535, 65535, 65535));
 
-	my $cursor	= Gtk2::Gdk::Cursor->new('xterm');
-	my $url_cursor	= Gtk2::Gdk::Cursor->new('hand2');
+    my $cursor    = Gtk2::Gdk::Cursor->new('xterm');
+    my $url_cursor    = Gtk2::Gdk::Cursor->new('hand2');
 
-	$self->signal_connect('button_release_event', sub { $self->clicked($_[1]) ; return 0 });
+    $self->signal_connect('button_release_event', sub { $self->clicked($_[1]) ; return 0 });
 
-	$self->signal_connect_after('realize' => sub {
-		my $view = shift;
+    $self->signal_connect_after('realize' => sub {
+        my $view = shift;
 
-		$view->get_window('text')->set_events([qw(exposure-mask
-							  pointer-motion-mask
-							  button-press-mask
-							  button-release-mask
-							  key-press-mask
-							  structure-mask
-							  property-change-mask
-							  scroll-mask)]);
+        $view->get_window('text')->set_events([qw(exposure-mask
+                              pointer-motion-mask
+                              button-press-mask
+                              button-release-mask
+                              key-press-mask
+                              structure-mask
+                              property-change-mask
+                              scroll-mask)]);
 
-		return 0;
-	});
+        return 0;
+    });
 
-	$self->signal_connect('motion_notify_event' => sub {
-		my ($view, $event) = @_;
-		my ($x, $y) = $view->window_to_buffer_coords('text', $event->x, $event->y);
-		my $over_link = $view->get_iter_at_location($x, $y)->has_tag($view->get_buffer()->get_tag_table()->lookup("link"));
+    $self->signal_connect('motion_notify_event' => sub {
+        my ($view, $event) = @_;
+        my ($x, $y) = $view->window_to_buffer_coords('text', $event->x, $event->y);
+        my $over_link = $view->get_iter_at_location($x, $y)->has_tag($view->get_buffer()->get_tag_table()->lookup("link"));
 
-		if ($over_link && !$self->{was_over_link}) {
-			# user has just brought the mouse over a link:
-			$self->{was_over_link} = 1;
-			my $text = $self->get_link_text_at_iter($view->get_iter_at_location($x, $y));
+        if ($over_link && !$self->{was_over_link}) {
+            # user has just brought the mouse over a link:
+            $self->{was_over_link} = 1;
+            my $text = $self->get_link_text_at_iter($view->get_iter_at_location($x, $y));
 
-			$self->signal_emit('link_enter', $text) if ($text ne '');
+            $self->signal_emit('link_enter', $text) if ($text ne '');
 
-		} elsif (!$over_link && $self->{was_over_link}) {
-			# user has just moved the mouse away from a link:
-			$self->{was_over_link} = 0;
+        } elsif (!$over_link && $self->{was_over_link}) {
+            # user has just moved the mouse away from a link:
+            $self->{was_over_link} = 0;
 
-			$self->signal_emit('link_leave');
+            $self->signal_emit('link_leave');
 
-		}
+        }
 
-		$view->get_window('text')->set_cursor($over_link ? $url_cursor : $cursor);
-		return 0;
-	});
+        $view->get_window('text')->set_cursor($over_link ? $url_cursor : $cursor);
+        return 0;
+    });
 }
 
 =head1 SYNOPSIS
 
-	use Gtk2 -init;
-	use Gtk2::Ex::HyperTextView;
+    use Gtk2 -init;
+    use Gtk2::Ex::HyperTextView;
 
-	my $viewer = Gtk2::Ex::HyperTextView->new;
+    my $viewer = Gtk2::Ex::HyperTextView->new;
 
     # ... load some content ...
 
-	$viewer->show;				# see, it's a widget!
+    $viewer->show;                # see, it's a widget!
 
-	my $window = Gtk2::Window->new;
-	$window->add($viewer);
+    my $window = Gtk2::Window->new;
+    $window->add($viewer);
 
-	$window->show;
+    $window->show;
 
-	Gtk2->main;
+    Gtk2->main;
 
 =head1 DESCRIPTION
 
@@ -190,14 +191,14 @@ L<http://developer.gnome.org/doc/API/2.0/gtk/GtkTextView.html>.
 
 =head1 CONSTRUCTOR
 
-	my $view = Gtk2::Ex::HyperTextView->new;
+    my $view = Gtk2::Ex::HyperTextView->new;
 
 creates and returns a new Gtk2::Ex::HyperTextView widget.
 
 
 =head1 ADDITIONAL METHODS
 
-	$viewer->clear;
+    $viewer->clear;
 
 This clears the viewer's buffer and resets the iter. You should never need to use this method since the loader methods (see L<Document Loaders> below) will do it for you.
 
@@ -211,15 +212,15 @@ sub _init_db {
 
 =pod
 
-	my $db = $viewer->get_db;
+    my $db = $viewer->get_db;
 
 This method returns a hashref that contains the POD document database used internally by Gtk2::Ex::HyperTextView. If you want to improve startup performance, you can cache this database using a module like C<Storable>. To load a cached database into a viewer object, call
 
-	$viewer->set_db($db);
+    $viewer->set_db($db);
 
 before making a call to any of the document loader methods below (otherwise, Gtk2::Ex::HyperTextView will create a new database for itself). If you want to tell Gtk2::Ex::HyperTextView to create a new document database (for example, after a new module has been installed), use
 
-	$viewer->reinitialize_db;
+    $viewer->reinitialize_db;
 
 =cut
 
@@ -230,87 +231,87 @@ sub get_db { $_[0]->{db} }
 sub reinitialize_db { shift()->_init_db }
 
 sub clear {
-	my $self = shift;
-	$self->get_buffer->set_text('');
-	$self->{parser}{iter} = $self->get_buffer->get_iter_at_offset(0);
-	return 1;
+    my $self = shift;
+    $self->get_buffer->set_text('');
+    $self->{parser}{iter} = $self->get_buffer->get_iter_at_offset(0);
+    return 1;
 }
 
 =pod
 
-	@marks = $view->get_marks;
+    @marks = $view->get_marks;
 
 This returns an array of section headers. So for example, a POD document of the form
 
-	=pod
+    =pod
 
-	=head1 NAME
+    =head1 NAME
 
-	=head1 SYNOPSIS
+    =head1 SYNOPSIS
 
-	=cut
+    =cut
 
 would result in
 
-	@marks = ('NAME', 'SYNOPSIS');
+    @marks = ('NAME', 'SYNOPSIS');
 
 You can then use the contents of this array to create a document index.
 
 =cut
 
 sub get_marks {
-	return $_[0]->{parser}->get_marks;
+    return $_[0]->{parser}->get_marks;
 }
 
 =pod
 
-	$name = 'SYNOPSIS';
+    $name = 'SYNOPSIS';
 
-	$mark = $view->get_mark($name);
+    $mark = $view->get_mark($name);
 
 returns the GtkTextMark object referred to by C<$name>.
 
 =cut
 
 sub get_mark {
-	return $_[0]->{parser}->get_mark($_[1]);
+    return $_[0]->{parser}->get_mark($_[1]);
 }
 
 =pod
 
-	$name = 'SYNOPSIS';
+    $name = 'SYNOPSIS';
 
-	$view->jump_to($name);
+    $view->jump_to($name);
 
 this scrolls the HyperTextView window to the selected mark.
 
 =cut
 
 sub jump_to {
-	my ($self, $name) = @_;
-	my $mark = $self->get_mark($name);
-	return undef unless (ref($mark) eq 'Gtk2::TextMark');
-	return $self->scroll_to_mark($mark, undef, 1, 0, 0);
+    my ($self, $name) = @_;
+    my $mark = $self->get_mark($name);
+    return undef unless (ref($mark) eq 'Gtk2::TextMark');
+    return $self->scroll_to_mark($mark, undef, 1, 0, 0);
 }
 
 =pod
 
-	$viewer->load($document);
+    $viewer->load($document);
 
 Loads a given document. C<$document> can be a perldoc name (eg., C<'perlvar'>), a module (eg. C<'IO::Scalar'>), a filename or the name of a Perl builtin function from L<perlfunc>. Documents are searched for in that order, that is, the L<perlvar> document will be loaded before a file called C<perlvar> in the current directory.
 
 =cut
 
 sub load {
-	my ($self, $name) = @_;
+    my ($self, $name) = @_;
 
-	$self->_init_db if (!defined($self->{db}));
+    $self->_init_db if (!defined($self->{db}));
 
-	return 1 if $self->load_function($name);
-	return 1 if $self->load_doc($name);
-	return 1 if $self->load_file($name);
+    return 1 if $self->load_function($name);
+    return 1 if $self->load_doc($name);
+    return 1 if $self->load_file($name);
 
-	return undef;
+    return undef;
 }
 
 =pod
@@ -319,15 +320,15 @@ sub load {
 
 The C<load()> method is a wrapper to a number of specialised document loaders. You can call one of these loaders directly to override the order in which Gtk2::Ex::HyperTextView searches for documents:
 
-	$viewer->load_doc($perldoc);
+    $viewer->load_doc($perldoc);
 
 loads a perldoc file or Perl module documentation, or undef on failure.
 
-	$viewer->load_file($file);
+    $viewer->load_file($file);
 
 loads POD from a file, or returns undef on failure.
 
-	$viewer->load_string($string);
+    $viewer->load_string($string);
 
 This method renders the POD data in the C<$string> variable.
 
@@ -335,72 +336,72 @@ This method renders the POD data in the C<$string> variable.
 
 # XXX
 sub load_doc {
-	my ($self, $doc) = @_;
-	return ($self->{db}->{$doc} ? $self->load_file($self->{db}->{$doc}) : undef);
+    my ($self, $doc) = @_;
+    return ($self->{db}->{$doc} ? $self->load_file($self->{db}->{$doc}) : undef);
 }
 
 sub load_file {
-	my ($self, $file) = @_;
-	if (-e $file) {
-		$self->clear;
-		$self->parser->clear_marks;
-		$self->parser->parse_from_file($file);
-		return 1;
-	} else {
-		return undef;
-	}
+    my ($self, $file) = @_;
+    if (-e $file) {
+        $self->clear;
+        $self->parser->clear_marks;
+        $self->parser->parse_from_file($file);
+        return 1;
+    } else {
+        return undef;
+    }
 }
 
 sub load_string {
-	my ($self, $string) = @_;
+    my ($self, $string) = @_;
 
     ### in load_string(): ref $self->parser
 
-	$self->clear;
+    $self->clear;
     ### one...
-	$self->parser->clear_marks;
+    $self->parser->clear_marks;
     ### two...
-	$self->parser->parse_from_string($string);
+    $self->parser->parse_from_string($string);
     ### three...
-	return 1;
+    return 1;
 }
 
 =pod
 
-	$parser = $view->parser;
+    $parser = $view->parser;
 
 returns the C<Gtk2::Ex::HyperTextView::Parser> object used to render the POD data.
 
 =cut
 
 sub parser {
-	return $_[0]->{parser};
+    return $_[0]->{parser};
 }
 
 sub clicked {
-	my ($self, $event) = @_;
-	my ($x, $y) = $self->window_to_buffer_coords('widget', $event->get_coords);
-	my $iter = $self->get_iter_at_location($x, $y);
-	my $text = $self->get_link_text_at_iter($iter);
-	if (defined($text) && $text ne '') {
-		$self->signal_emit('link_clicked', $text);
-	}
-	return 1;
+    my ($self, $event) = @_;
+    my ($x, $y) = $self->window_to_buffer_coords('widget', $event->get_coords);
+    my $iter = $self->get_iter_at_location($x, $y);
+    my $text = $self->get_link_text_at_iter($iter);
+    if (defined($text) && $text ne '') {
+        $self->signal_emit('link_clicked', $text);
+    }
+    return 1;
 }
 
 sub get_link_text_at_iter {
-	my ($self, $iter) = @_;
-	my $tag = $self->get_buffer->get_tag_table->lookup('link');
-	if ($iter->has_tag($tag)) {
-		my $offset = $iter->get_offset;
-		for (my $i = 0 ; $i < scalar(@{$self->parser->{links}}) ; $i++) {
-			my ($text,  $this_offset) = @{@{$self->parser->{links}}[$i]};
-			if ($offset >= $this_offset && $offset <= ($this_offset + length($text))) {
-				return $text;
-			}
-		}
-	}
-	return undef;
+    my ($self, $iter) = @_;
+    my $tag = $self->get_buffer->get_tag_table->lookup('link');
+    if ($iter->has_tag($tag)) {
+        my $offset = $iter->get_offset;
+        for (my $i = 0 ; $i < scalar(@{$self->parser->{links}}) ; $i++) {
+            my ($text,  $this_offset) = @{@{$self->parser->{links}}[$i]};
+            if ($offset >= $this_offset && $offset <= ($this_offset + length($text))) {
+                return $text;
+            }
+        }
+    }
+    return undef;
 }
 
 !!42;
@@ -415,34 +416,34 @@ Gtk2::Ex::HyperTextView inherits all of Gtk2::TextView's signals, and has the fo
 
 =head2 The C<'link_clicked'> signal
 
-	$viewer->signal_connect('link_clicked', \&clicked);
+    $viewer->signal_connect('link_clicked', \&clicked);
 
-	sub clicked {
-		my ($viewer, $link_text) = @_;
-		print "user clicked on '$link_text'\n";
-	}
+    sub clicked {
+        my ($viewer, $link_text) = @_;
+        print "user clicked on '$link_text'\n";
+    }
 
 Emitted when the user clicks on a hyperlink within the POD. This may be a section title, a document name, or a URL. The receiving function will be giving two arguments: a reference to the Gtk2::Ex::HyperTextView object, and a scalar containing the link text.
 
 =head2 The C<'link_enter'> signal
 
-	$viewer->signal_connect('link_enter', \&enter);
+    $viewer->signal_connect('link_enter', \&enter);
 
-	sub enter {
-		my ($viewer, $link_text) = @_;
-		print "user moused over '$link_text'\n";
-	}
+    sub enter {
+        my ($viewer, $link_text) = @_;
+        print "user moused over '$link_text'\n";
+    }
 
 Emitted when the user moves the mouse pointer over a hyperlink within the POD. This may be a section title, a document name, or a URL. The receiving function will be giving two arguments: a reference to the Gtk2::Ex::HyperTextView object, and a scalar containing the link text.
 
 =head2 The C<'link_leave'> signal
 
-	$viewer->signal_connect('link_leave', \&leave);
+    $viewer->signal_connect('link_leave', \&leave);
 
-	sub clicked {
-		my $viewer = shift;
-		print "user moused out\n";
-	}
+    sub clicked {
+        my $viewer = shift;
+        print "user moused out\n";
+    }
 
 Emitted when the user moves the mouse pointer out from a hyperlink within the POD. 
 
@@ -450,12 +451,12 @@ Emitted when the user moves the mouse pointer out from a hyperlink within the PO
 
 You can set the font used to render text in a Gtk2::Ex::HyperTextView widget like so:
 
-	$viewer->modify_font(Gtk2::Pango::FontDescription->from_string($FONT_NAME);
+    $viewer->modify_font(Gtk2::Pango::FontDescription->from_string($FONT_NAME);
 
 To modify the appearance of the various elements of the page, you need to extract the L<Gtk2::TextTag> from the viewer's buffer:
 
-	my $tag = $viewer->get_buffer->get_tag_table->lookup('monospace');
-	$tag->set('font' => $FONT_NAME);
+    my $tag = $viewer->get_buffer->get_tag_table->lookup('monospace');
+    $tag->set('font' => $FONT_NAME);
 
 The tags used by Gtk2::Ex::HyperTextView are:
 
