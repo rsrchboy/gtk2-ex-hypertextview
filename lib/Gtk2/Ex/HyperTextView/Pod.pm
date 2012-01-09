@@ -7,7 +7,8 @@ use strict;
 
 use parent 'Gtk2::Ex::HyperTextView';
 
-use Gtk2::Ex::HyperTextView::Pod::Parser;
+use Class::Load;
+use Gtk2::Ex::PodViewer::Parser;
 use Pod::Simple::Search;
 
 # debugging...
@@ -20,7 +21,15 @@ use Glib::Object::Subclass
     properties => [ ],
     ;
 
-sub _parser { 'Gtk2::Ex::HyperTextView::Pod::Parser' }
+sub _parser { 'Gtk2::Ex::PodViewer::Parser' }
+
+sub INIT_INSTANCE {
+    my $self = shift @_;
+
+    Class::Load::load_class($self->_parser);
+    $self->{parser} = $self->_parser->new(buffer => $self->get_buffer);
+    return;
+}
 
 =head1 SYNOPSIS
 

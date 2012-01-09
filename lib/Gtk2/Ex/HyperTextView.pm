@@ -7,6 +7,7 @@ use strict;
 
 use Gtk2;
 use Gtk2::Pango;
+use Class::Load;
 
 # debugging...
 use Smart::Comments '###';
@@ -29,6 +30,7 @@ sub INIT_INSTANCE {
 
     $self->set_editable(0);
     $self->set_wrap_mode('word');
+    Class::Load::load_class($self->_parser);
     $self->{parser} = $self->_parser->new(buffer => $self->get_buffer);
 
     $self->get_buffer->create_tag(
