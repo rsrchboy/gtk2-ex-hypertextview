@@ -272,6 +272,13 @@ sub perlfunc {
 
 __END__
 
+=head1 THE podviewer PROGRAM
+
+C<podviewer> is installed with Gtk2::Ex::HyperTextView::Pod. It is a simple
+Pod viewing program. It is pretty minimal, but does do the job quite well.
+Those looking for a more feature-complete documentation browser should try
+PodBrowser, available from L<http://jodrell.net/projects/podbrowser>.
+
 =head1 SEE ALSO
 
 =over

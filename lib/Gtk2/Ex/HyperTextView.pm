@@ -21,7 +21,7 @@ use Glib::Object::Subclass
 	properties => [ ],
 ;
 
-sub _parser { 'Gtk2::Ex::PodViewer::Parser' }
+sub _parser { 'Gtk2::Ex::HyperTextView::Parser' }
 
 sub INIT_INSTANCE {
 	my $self = shift;
@@ -149,25 +149,14 @@ sub INIT_INSTANCE {
 	});
 }
 
-=pod
-
-=head1 NAME
-
-Gtk2::Ex::PodViewer - a Gtk2 widget for displaying Plain old Documentation (POD).
-
-NB: This module used to be called L<Gtk2::PodViewer>. That module is now a stub that points to this module.
-
 =head1 SYNOPSIS
 
 	use Gtk2 -init;
-	use Gtk2::Ex::PodViewer;
+	use Gtk2::Ex::HyperTextView;
 
-	my $viewer = Gtk2::Ex::PodViewer->new;
+	my $viewer = Gtk2::Ex::HyperTextView->new;
 
-	$viewer->load('/path/to/file.pod');	# load a file
-	$viewer->load('IO::Scalar');		# load a module
-	$viewer->load('perlvar');		# load a perldoc
-	$viewer->load('bless');			# load a function
+    # ... load some content ...
 
 	$viewer->show;				# see, it's a widget!
 
@@ -180,24 +169,30 @@ NB: This module used to be called L<Gtk2::PodViewer>. That module is now a stub 
 
 =head1 DESCRIPTION
 
-Gtk2::Ex::PodViewer is a widget for rendering Perl POD documents. It is based on the Gtk2::TextView widget and uses Pod::Parser for manipulating POD data.
+Gtk2::Ex::HyperTextView is a widget for rendering documents containing
+hyperlinks. It is based on the L<Gtk2::TextView> widget and provides a widget
+that can be used by itself, or subclassed (e.g.
+L<Gtk2::Ex::HyperTextView::Pod>.
 
-Gtk2::Ex::PodViewer widgets inherit all the methods and properties of Gtk2::TextView widgets. Full information about text buffers can be found in the Gtk+ documentation at L<http://developer.gnome.org/doc/API/2.0/gtk/GtkTextView.html>.
+Gtk2::Ex::HyperTextView widgets inherit all the methods and properties of
+L<Gtk2::TextView> widgets. Full information about text buffers can be found
+in the Gtk+ documentation at
+L<http://developer.gnome.org/doc/API/2.0/gtk/GtkTextView.html>.
 
 =head1 OBJECT HIERARCHY
 
-	L<Glib::Object>
-	+--- L<Gtk2::Object>
-	     +--- L<Gtk2::Widget>
-	          +--- L<Gtk2::Editable>
-		       +--- L<Gtk2::TextView>
-			    +--- L<Gtk2::Ex::PodViewer>
+    L<Glib::Object>
+    +--- L<Gtk2::Object>
+         +--- L<Gtk2::Widget>
+              +--- L<Gtk2::Editable>
+                   +--- L<Gtk2::TextView>
+                        +--- L<Gtk2::Ex::HyperTextView>
 
 =head1 CONSTRUCTOR
 
-	my $view = Gtk2::Ex::PodViewer->new;
+	my $view = Gtk2::Ex::HyperTextView->new;
 
-creates and returns a new Gtk2::Ex::PodViewer widget.
+creates and returns a new Gtk2::Ex::HyperTextView widget.
 
 
 =head1 ADDITIONAL METHODS
@@ -218,11 +213,11 @@ sub _init_db {
 
 	my $db = $viewer->get_db;
 
-This method returns a hashref that contains the POD document database used internally by Gtk2::Ex::PodViewer. If you want to improve startup performance, you can cache this database using a module like C<Storable>. To load a cached database into a viewer object, call
+This method returns a hashref that contains the POD document database used internally by Gtk2::Ex::HyperTextView. If you want to improve startup performance, you can cache this database using a module like C<Storable>. To load a cached database into a viewer object, call
 
 	$viewer->set_db($db);
 
-before making a call to any of the document loader methods below (otherwise, Gtk2::Ex::PodViewer will create a new database for itself). If you want to tell Gtk2::Ex::PodViewer to create a new document database (for example, after a new module has been installed), use
+before making a call to any of the document loader methods below (otherwise, Gtk2::Ex::HyperTextView will create a new database for itself). If you want to tell Gtk2::Ex::HyperTextView to create a new document database (for example, after a new module has been installed), use
 
 	$viewer->reinitialize_db;
 
@@ -287,7 +282,7 @@ sub get_mark {
 
 	$view->jump_to($name);
 
-this scrolls the PodViewer window to the selected mark.
+this scrolls the HyperTextView window to the selected mark.
 
 =cut
 
@@ -322,7 +317,7 @@ sub load {
 
 =head1 DOCUMENT LOADERS
 
-The C<load()> method is a wrapper to a number of specialised document loaders. You can call one of these loaders directly to override the order in which Gtk2::Ex::PodViewer searches for documents:
+The C<load()> method is a wrapper to a number of specialised document loaders. You can call one of these loaders directly to override the order in which Gtk2::Ex::HyperTextView searches for documents:
 
 	$viewer->load_doc($perldoc);
 
@@ -374,7 +369,7 @@ sub load_string {
 
 	$parser = $view->parser;
 
-returns the C<Gtk2::Ex::PodViewer::Parser> object used to render the POD data.
+returns the C<Gtk2::Ex::HyperTextView::Parser> object used to render the POD data.
 
 =cut
 
@@ -408,11 +403,15 @@ sub get_link_text_at_iter {
 	return undef;
 }
 
+!!42;
+
+__END__
+
 =pod
 
 =head1 SIGNALS
 
-Gtk2::Ex::PodViewer inherits all of Gtk2::TextView's signals, and has the following:
+Gtk2::Ex::HyperTextView inherits all of Gtk2::TextView's signals, and has the following:
 
 =head2 The C<'link_clicked'> signal
 
@@ -423,7 +422,7 @@ Gtk2::Ex::PodViewer inherits all of Gtk2::TextView's signals, and has the follow
 		print "user clicked on '$link_text'\n";
 	}
 
-Emitted when the user clicks on a hyperlink within the POD. This may be a section title, a document name, or a URL. The receiving function will be giving two arguments: a reference to the Gtk2::Ex::PodViewer object, and a scalar containing the link text.
+Emitted when the user clicks on a hyperlink within the POD. This may be a section title, a document name, or a URL. The receiving function will be giving two arguments: a reference to the Gtk2::Ex::HyperTextView object, and a scalar containing the link text.
 
 =head2 The C<'link_enter'> signal
 
@@ -434,7 +433,7 @@ Emitted when the user clicks on a hyperlink within the POD. This may be a sectio
 		print "user moused over '$link_text'\n";
 	}
 
-Emitted when the user moves the mouse pointer over a hyperlink within the POD. This may be a section title, a document name, or a URL. The receiving function will be giving two arguments: a reference to the Gtk2::Ex::PodViewer object, and a scalar containing the link text.
+Emitted when the user moves the mouse pointer over a hyperlink within the POD. This may be a section title, a document name, or a URL. The receiving function will be giving two arguments: a reference to the Gtk2::Ex::HyperTextView object, and a scalar containing the link text.
 
 =head2 The C<'link_leave'> signal
 
@@ -449,7 +448,7 @@ Emitted when the user moves the mouse pointer out from a hyperlink within the PO
 
 =head1 Getting and Setting Font preferences
 
-You can set the font used to render text in a Gtk2::Ex::PodViewer widget like so:
+You can set the font used to render text in a Gtk2::Ex::HyperTextView widget like so:
 
 	$viewer->modify_font(Gtk2::Pango::FontDescription->from_string($FONT_NAME);
 
@@ -458,7 +457,7 @@ To modify the appearance of the various elements of the page, you need to extrac
 	my $tag = $viewer->get_buffer->get_tag_table->lookup('monospace');
 	$tag->set('font' => $FONT_NAME);
 
-The tags used by Gtk2::Ex::PodViewer are:
+The tags used by Gtk2::Ex::HyperTextView are:
 
 =over
 
@@ -488,13 +487,9 @@ Used to format hyperlinks.
 
 =back
 
-=head1 THE podviewer PROGRAM
-
-C<podviewer> is installed with Gtk2::Ex::PodViewer. It is a simple Pod viewing program. It is pretty minimal, but does do the job quite well. Those looking for a more feature-complete documentation browser should try PodBrowser, available from L<http://jodrell.net/projects/podbrowser>.
-
 =head1 BUGS AND TASKS
 
-Gtk2::Ex::PodViewer is a work in progress. All comments, complaints, offers of help and patches are welcomed.
+Gtk2::Ex::HyperTextView is a work in progress. All comments, complaints, offers of help and patches are welcomed.
 
 We currently know about these issues:
 
@@ -532,7 +527,7 @@ L<Pod::Simple::Search>
 
 =back
 
-L<Gtk2::Ex::PodViewer::Parser>, which is part of the L<Gtk2::Ex::PodViewer> distribution, also requires L<Locale::gettext>.
+L<Gtk2::Ex::HyperTextView::Parser>, which is part of the L<Gtk2::Ex::HyperTextView> distribution, also requires L<Locale::gettext>.
 
 =head1 SEE ALSO
 
@@ -548,53 +543,46 @@ L<http://developer.gnome.org/doc/API/2.0/gtk/GtkTextView.html>
 
 =item *
 
-L<Gtk2::Ex::PodViewer::Parser>
+L<Gtk2::Ex::HyperTextView::Parser>,
+L<Gtk2::Ex::PodViewer>, L<Gtk2::Ex::HyperTextView::Pod>,
+L<Gtk2::Ex::HyperTextView::Markdown>.
 
 =back
-
-=head1 AUTHORS
-
-Gavin Brown, Torsten Schoenfeld and Scott Arrington.
-
-=head1 COPYRIGHT
-
-(c) 2003-2005 Gavin Brown (gavin.brown@uk.com). All rights reserved. This program is free software; you can redistribute it and/or modify it under the same terms as Perl itself. 
-
-=cut
-
-1;
-
-use Moose;
-use namespace::autoclean;
-use common::sense;
-
-
-__PACKAGE__->meta->make_immutable;
-
-1;
-
-__END__
-
-=head1 SYNOPSIS
-
-=head1 DESCRIPTION
-
-=head1 SEE ALSO
-
-L<Smart::Comments>, L<Test::NoSmartComments>
 
 =head1 BUGS
 
 All complex software has bugs lurking in it, and this module is no exception.
 
-Please report any bugs to
-"bug-Gtk2::Ex::HyperTextView@rt.cpan.org",
-or through the web interface at <http://rt.cpan.org>.
-
 Bugs, feature requests and pull requests through GitHub are most welcome; our
 page and repo (same URI):
 
-    https://github.com/RsrchBoy/gtk2::ex::hypertextview
+    https://github.com/RsrchBoy/gtk2-ex-hypertextview
+
+=head1 RATIONALE
+
+This work is a "restatement" of the L<Gtk2::Ex::PodViewer> package.  It's been
+altered such that the link-aware subclass of L<Gtk2::TextView> is contained in
+its own base class (L<Gtk2::Ex::HyperTextView>_, such that Pod (and other)
+viewers can in turn descend from the base class.
+
+=head1 AUTHORS
+
+This package is largely a restatement/realignment of the code and
+documentation contained in the L<Gtk2::Ex::PodViewer> distribution.
+PodViewer's authors are listed as Gavin Brown, Torsten Schoenfeld and Scott
+Arrington.
+
+All errors, and the work realigning the code, have been done by Chris Weyl.
+
+=head1 COPYRIGHT
+
+Copyright (c) 2012 Chris Weyl. This program is free software; you can redistribute
+it and/or modify it under the same terms as Perl itself.
+
+Large chunks of code in this package are:
+
+(c) 2003-2005 Gavin Brown (gavin.brown@uk.com). All rights reserved. This
+program is free software; you can redistribute it and/or modify it under the
+same terms as Perl itself.
 
 =cut
-
