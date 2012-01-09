@@ -3,6 +3,10 @@
 # free software; you can redistribute it and/or modify it under the same
 # terms as Perl itself. 
 # $Id: podviewer,v 1.32 2005/10/04 11:18:04 jodrell Exp $
+
+# Pod::Weaver needs this?!
+package main;
+
 use lib 'lib/';
 use Gtk2 -init;
 use Gtk2::Ex::HyperTextView::Pod;
